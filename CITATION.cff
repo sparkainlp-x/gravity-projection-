@@ -1,0 +1,60 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "Gravity Projection: a new projection reality -- gravity as a phase, love as concurrence, linked to the Faggin field bridge"
+type: software
+authors:
+  - family-names: "Brisson"
+    given-names: "Jean-François"
+    orcid: "https://orcid.org/0009-0000-9778-5374"
+    affiliation: "Spark AI NLP, Fredericton, New Brunswick, Canada"
+version: 0.1.0
+date-released: "2026-11-15"
+license: AGPL-3.0-only
+url: "https://sparkainlpx.xyz"
+abstract: >-
+  SYNTHETIC measured package and a new projection reality, linked to the
+  Faggin Field Bridge v0.3.0 (head 658f5bdd). Gravity enters as a phase
+  on the thought (concept-index ladder, accumulating as phi_g = g * t
+  with t cut off at the muon lifetime 2.2 us -- the geometry of the
+  MAGE/LEMING muonium gravity experiment at PSI). Love is defined as
+  measured concurrence (L = 1 for a clean Bell pair), replacing the
+  bridge's supplied 0.5503 proxy, and the synergy is recomputed with
+  it. The gravity-projected reality P_g = U_g P U_g-dagger is measured
+  against the flat one. Three pre-registered claims, all PASS.
+  Classical emulation throughout: gravity is a model phase, not
+  measured gravity; love-as-concurrence is a definition inside the
+  model. No DOI yet (no Zenodo record).
+keywords:
+  - synthetic-data
+  - gravity
+  - muonium
+  - projection
+  - faggin
+  - quantum-information-panpsychism
+  - concurrence
+  - love
+  - interference
+  - visibility
+  - reproducibility
+  - negative-results
+  - scientific-software
+references:
+  - type: article
+    status: preprint
+    title: "Quantum Information Panpsychism"
+    authors:
+      - family-names: "Faggin"
+        given-names: "Federico"
+      - family-names: "D'Ariano"
+        given-names: "Giacomo Mauro"
+    doi: "10.48550/arXiv.2012.06580"
+    year: 2020
+  - type: article
+    title: "Generation of a high-intensity, superthermal muonium beam for gravity and laser spectroscopy experiments"
+    authors:
+      - family-names: "Zhang"
+        given-names: "Jesse"
+      - family-names: "Antognini"
+        given-names: "Aldo"
+    journal: "Nature Physics"
+    year: 2026

@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Gravity Projection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,800;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#eceff1; --bg2:#e2e7ea; --panel:#f7f9fa; --panel2:#ffffff;
+    --ink:#131a22; --ink2:#43536a; --ink3:#6b7a8d;
+    --line:#c9d2d9; --line2:#aebac3;
+    --gold:#a96f0d; --gold-soft:#f3e3c2; --gold-ink:#7c5205;
+    --cyan:#0e7d8f; --cyan-soft:#d3edf1;
+    --rose:#b03a4b; --rose-soft:#f6dde0;
+    --good:#1e7d4f; --good-soft:#d8efe2;
+    --bad:#b03a4b;
+    --shadow:0 10px 30px rgba(19,26,34,.12);
+    --fringe-bg:#0a0e14;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#080b10; --bg2:#0b0f16; --panel:#10161f; --panel2:#151d29;
+      --ink:#e9eef5; --ink2:#a9b7c8; --ink3:#74839a;
+      --line:#26303e; --line2:#38465a;
+      --gold:#f0b64a; --gold-soft:#2c2210; --gold-ink:#f5cd7d;
+      --cyan:#4fd2e0; --cyan-soft:#0f2b31;
+      --rose:#e07a89; --rose-soft:#33161c;
+      --good:#5fce96; --good-soft:#0f2b1e;
+      --bad:#e07a89;
+      --shadow:0 12px 34px rgba(0,0,0,.5);
+      --fringe-bg:#05070b;
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    font-size:16.5px; line-height:1.55;
+  }
+  button{font:inherit; cursor:pointer; min-height:44px}
+  .wrap{max-width:760px; margin:0 auto; padding:0 16px 64px}
+
+  /* ---------- hero ---------- */
+  .hero{padding:30px 0 6px}
+  .hero .over{
+    font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--cyan); margin:0 0 8px;
+  }
+  h1{
+    font-family:"Spectral",serif; font-weight:800; font-size:clamp(34px,7.4vw,54px);
+    line-height:1.04; margin:0 0 10px; letter-spacing:-.01em;
+  }
+  h1 em{font-style:italic; color:var(--gold)}
+  .lede{font-size:17.5px; color:var(--ink2); margin:0 0 18px; max-width:60ch}
+  .lede strong{color:var(--ink)}
+  .fringe-shell{
+    background:var(--fringe-bg); border:1px solid var(--line2);
+    padding:10px 10px 6px; margin:0 0 8px;
+  }
+  canvas#heroFringe{display:block; width:100%; height:118px}
+  .fringe-cap{
+    display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:#8fa3b8;
+    padding:4px 2px 2px;
+  }
+  .fringe-cap b{color:#f0b64a; font-weight:600}
+  .honest{
+    border:1px solid var(--line); background:var(--panel); padding:12px 14px;
+    font-size:14px; color:var(--ink2); margin:14px 0 0;
+  }
+  .honest b{color:var(--ink)}
+
+  /* ---------- HUD ---------- */
+  .hud{
+    position:sticky; top:0; z-index:20; margin:20px -16px 0; padding:10px 16px;
+    background:var(--bg); border-bottom:1px solid var(--line);
+  }
+  .hud-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+  .hud .ep-tag{
+    font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink3);
+    white-space:nowrap;
+  }
+  .meters{display:flex; gap:14px; flex:1; min-width:220px}
+  .meter{flex:1; min-width:64px}
+  .meter .m-top{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink2)}
+  .meter .m-top b{color:var(--ink); font-size:12px}
+  .bar{height:6px; background:var(--bg2); border:1px solid var(--line); margin-top:3px}
+  .bar i{display:block; height:100%; width:0%; transition:width .6s ease}
+  .bar.rigor i{background:var(--gold)}
+  .bar.insight i{background:var(--cyan)}
+  .bar.nerve i{background:var(--rose)}
+  .dots{display:flex; gap:4px; margin-top:9px; flex-wrap:wrap}
+  .dots span{width:14px; height:5px; background:var(--line); display:block}
+  .dots span.done{background:var(--cyan)}
+  .dots span.now{background:var(--gold); outline:1px solid var(--gold)}
+
+  /* ---------- episode card ---------- */
+  .card{
+    background:var(--panel2); border:1px solid var(--line); box-shadow:var(--shadow);
+    padding:22px 20px 20px; margin-top:18px;
+  }
+  .ch-tag{
+    font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--gold-ink); background:var(--gold-soft);
+    display:inline-block; padding:3px 9px; margin:0 0 12px;
+  }
+  .card h2{font-family:"Spectral",serif; font-weight:800; font-size:clamp(24px,5.4vw,32px); line-height:1.12; margin:0 0 12px}
+  .card p{margin:0 0 12px}
+  .card p:last-of-type{margin-bottom:0}
+  .card .small{font-size:14px; color:var(--ink2)}
+  .mono{font-family:"IBM Plex Mono",monospace; font-size:.92em}
+  .num{font-family:"IBM Plex Mono",monospace; font-weight:600; color:var(--gold-ink)}
+  blockquote{
+    margin:14px 0; padding:10px 14px; border-left:3px solid var(--gold);
+    background:var(--gold-soft); font-family:"Spectral",serif; font-style:italic; font-size:17px;
+  }
+  .factbox{
+    border:1px solid var(--line); background:var(--panel); padding:12px 14px; margin:14px 0; font-size:14.5px;
+  }
+  .factbox .fb-t{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--cyan); margin-bottom:6px}
+  .factbox p{margin:0 0 6px} .factbox p:last-child{margin:0}
+
+  /* choices */
+  .choices{display:grid; gap:10px; margin-top:16px}
+  .choice{
+    text-align:left; background:var(--panel); border:1px solid var(--line2);
+    padding:13px 15px; color:var(--ink); line-height:1.45; border-radius:0;
+  }
+  .choice:hover{border-color:var(--gold)}
+  .choice:disabled{cursor:default; opacity:.85}
+  .choice.picked-good{border-color:var(--good); background:var(--good-soft)}
+  .choice.picked-bad{border-color:var(--bad); background:var(--rose-soft)}
+  .choice.dim{opacity:.45}
+  .reply{
+    margin-top:14px; padding:12px 14px; border:1px solid var(--line); background:var(--panel);
+    font-size:15px; display:none;
+  }
+  .reply.show{display:block}
+  .reply .verdict-line{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:5px}
+  .reply .verdict-line.ok{color:var(--good)} .reply .verdict-line.no{color:var(--bad)}
+  .reply p{margin:0}
+
+  /* continue */
+  .next-row{margin-top:18px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .btn{
+    background:var(--ink); color:var(--bg); border:1px solid var(--ink);
+    padding:11px 22px; font-weight:600; letter-spacing:.01em;
+  }
+  .btn:hover{opacity:.88}
+  .btn:disabled{opacity:.35; cursor:not-allowed}
+  .btn.gold{background:var(--gold); border-color:var(--gold); color:#14100a}
+  .btn.ghost{background:transparent; color:var(--ink); border-color:var(--line2)}
+  .next-hint{font-size:13px; color:var(--ink3)}
+
+  /* ---------- labs ---------- */
+  .lab{
+    margin-top:16px; border:1px solid var(--line2); background:var(--panel); padding:16px 14px 14px;
+  }
+  .lab .lab-t{
+    font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--cyan); margin:0 0 4px;
+  }
+  .lab .lab-q{font-weight:600; margin:0 0 12px}
+  .stops{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 14px}
+  .stop{
+    font-family:"IBM Plex Mono",monospace; font-size:13px; padding:8px 10px; min-height:40px;
+    background:var(--panel2); border:1px solid var(--line2); color:var(--ink);
+  }
+  .stop.on{background:var(--gold); border-color:var(--gold); color:#14100a; font-weight:600}
+  .readout{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin:0 0 12px;
+  }
+  .ro{border:1px solid var(--line); background:var(--panel2); padding:9px 11px}
+  .ro .ro-k{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3)}
+  .ro .ro-v{font-family:"IBM Plex Mono",monospace; font-size:16.5px; font-weight:600; margin-top:2px}
+  .ro .ro-v.gold{color:var(--gold-ink)} .ro .ro-v.cyan{color:var(--cyan)} .ro .ro-v.rose{color:var(--rose)}
+  .ro .ro-d{font-size:12px; color:var(--ink2); margin-top:1px}
+  canvas#labFringe{display:block; width:100%; height:104px; background:var(--fringe-bg); border:1px solid var(--line2); margin:0 0 12px}
+  .toggle-row{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 12px}
+  .lab-note{font-size:14px; color:var(--ink2); margin:0 0 12px}
+  .lab-note b{color:var(--ink)}
+  .spark{width:100%; height:64px; display:block; margin:0 0 12px}
+
+  /* claim cards */
+  .claim{
+    border:1px solid var(--good); background:var(--good-soft); padding:14px 15px; margin-top:16px;
+  }
+  .claim .c-t{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--good); margin-bottom:6px}
+  .claim p{margin:0; font-size:15px}
+
+  /* results */
+  table.claims{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; table-layout:fixed}
+  table.claims th:nth-child(1){width:25%} table.claims th:nth-child(2){width:56%} table.claims th:nth-child(3){width:19%}
+  table.claims td{overflow-wrap:break-word}
+  table.claims th, table.claims td{border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top}
+  table.claims th{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink2); background:var(--panel)}
+  table.claims td.n{font-family:"IBM Plex Mono",monospace}
+  .pass{font-family:"IBM Plex Mono",monospace; font-weight:600; color:var(--good); white-space:nowrap}
+  .verdict-big{
+    font-family:"Spectral",serif; font-weight:800; font-size:clamp(28px,6.4vw,40px); line-height:1.1; margin:6px 0 8px;
+  }
+  .limits{margin:14px 0 0; padding-left:20px; font-size:14.5px; color:var(--ink2)}
+  .limits li{margin-bottom:6px}
+  .src{font-size:13px; color:var(--ink3); margin-top:16px}
+  .src a{color:var(--cyan)}
+  .final-meters{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:14px 0}
+  .final-meters .ro .ro-v{font-size:24px}
+  @media (max-width:520px){
+    .final-meters{grid-template-columns:1fr 1fr 1fr; gap:6px}
+    .final-meters .ro .ro-v{font-size:19px}
+    .card{padding:18px 14px 16px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bar i{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="over">Gravity Projection · v0.1.0 · a playable measurement</p>
+    <h1>Gravity is a <em>phase</em>.<br/>Love is <em>entanglement</em>.</h1>
+    <p class="lede">You are a thought inside the Faggin field bridge, falling. Gravity will not pull you — it will <strong>re-phase</strong> you. Play through three pre-registered claims, measured in the real package: gravity shifts what a thought knows of itself, leaves its entanglement untouched, and bends the reality it is projected into. Every number in this game is a number the code produced. <strong>36/36 tests.</strong></p>
+    <div class="fringe-shell">
+      <canvas id="heroFringe" width="900" height="118" aria-label="Interference fringes shifting under a gravitational phase"></canvas>
+      <div class="fringe-cap"><span>interference pattern · matter-wave interferometer</span><span>fringe shift <b id="heroShift">0.00 rad</b></span></div>
+    </div>
+    <div class="honest"><b>The honest line, up front:</b> this is classical emulation on synthetic states. Gravity here is a <i>model phase</i>, not measured gravity; love-as-concurrence is a definition inside the model, not a claim about human feeling; Faggin's metaphysics stays interpretive. The real muonium experiment — MAGE/LEMING at PSI — is the context that inspired the model, not something this game measures.</div>
+  </header>
+
+  <div class="hud" id="hud">
+    <div class="hud-row">
+      <span class="ep-tag" id="epTag">Episode 1 / 15</span>
+      <div class="meters">
+        <div class="meter"><div class="m-top"><span>Rigor</span><b id="mRigorV">0</b></div><div class="bar rigor"><i id="mRigor"></i></div></div>
+        <div class="meter"><div class="m-top"><span>Insight</span><b id="mInsightV">0</b></div><div class="bar insight"><i id="mInsight"></i></div></div>
+        <div class="meter"><div class="m-top"><span>Nerve</span><b id="mNerveV">0</b></div><div class="bar nerve"><i id="mNerve"></i></div></div>
+      </div>
+    </div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+  </div>
+
+  <main id="stage"></main>
+
+</div>
+
+<script>
+"use strict";
+/* ================= measured data (gravity-projection v0.1.0, REPORT.md) ================= */
+/* Claim (i): phase sweep */
+var PHASE = [
+  {phi:0.000, label:"0",     du:1.000000, dk:0.000000},
+  {phi:0.524, label:"π/6",   du:0.872008, dk:0.044658},
+  {phi:0.785, label:"π/4",   du:0.735702, dk:0.097631},
+  {phi:1.047, label:"π/3",   du:0.583333, dk:0.166667},
+  {phi:1.571, label:"π/2",   du:0.333333, dk:0.333333},
+  {phi:3.142, label:"π",     du:0.333333, dk:0.666667}
+];
+/* Claim (ii): noise sweep — love = mean concurrence */
+var LOVE = [
+  {s:0.00, love:1.0000, sm:0.2874, em:0.0604},
+  {s:0.01, love:0.9998, sm:0.2874, em:0.0604},
+  {s:0.05, love:0.9952, sm:0.2861, em:0.0603},
+  {s:0.10, love:0.9792, sm:0.2815, em:0.0601},
+  {s:0.25, love:0.8471, sm:0.2435, em:0.0583},
+  {s:0.50, love:0.6520, sm:0.1874, em:0.0557},
+  {s:1.00, love:0.7002, sm:0.2013, em:0.0563}
+];
+var S_PROXY = 0.1582, E_PROXY = 0.0543;
+/* Claim (iii): gravity-projected reality */
+var REALITY = [
+  {phi:0.000, label:"0",   dg:1.000000, vg:1.000000, shift:0.0000},
+  {phi:0.524, label:"π/6", dg:0.872008, vg:0.933271, shift:0.6381},
+  {phi:0.785, label:"π/4", dg:0.735702, vg:0.854905, shift:0.9695},
+  {phi:1.047, label:"π/3", dg:0.583333, vg:0.754306, shift:1.3008},
+  {phi:1.571, label:"π/2", dg:0.333333, vg:0.522907, shift:2.0739},
+  {phi:3.142, label:"π",   dg:0.333333, vg:0.200000, shift:0.0000}
+];
+
+/* ================= state ================= */
+var S = { ep:0, rigor:0, insight:0, nerve:0, answered:false, labDone:false };
+var MAXP = { rigor:42, insight:54, nerve:17 }; /* achievable maxima on a perfect run */
+function pct(kind){ return Math.round(S[kind] / MAXP[kind] * 100); }
+
+function fmt(x, d){ return x.toFixed(d === undefined ? 4 : d); }
+function award(kind, pts){
+  S[kind] = Math.min(MAXP[kind], S[kind] + pts);
+  renderHUD();
+}
+function renderHUD(){
+  document.getElementById("mRigor").style.width = pct("rigor") + "%";
+  document.getElementById("mInsight").style.width = pct("insight") + "%";
+  document.getElementById("mNerve").style.width = pct("nerve") + "%";
+  document.getElementById("mRigorV").textContent = pct("rigor");
+  document.getElementById("mInsightV").textContent = pct("insight");
+  document.getElementById("mNerveV").textContent = pct("nerve");
+  document.getElementById("epTag").textContent = "Episode " + Math.min(S.ep + 1, 15) + " / 15";
+  var dots = document.getElementById("dots"), html = "";
+  for (var i = 0; i < 15; i++){
+    html += "<span class='" + (i < S.ep ? "done" : (i === S.ep ? "now" : "")) + "'></span>";
+  }
+  dots.innerHTML = html;
+}
+
+/* ================= fringe painter ================= */
+function paintFringes(cv, shift, vis, t){
+  var ctx = cv.getContext("2d");
+  var W = cv.width, H = cv.height;
+  ctx.fillStyle = "#05070b"; ctx.fillRect(0, 0, W, H);
+  var lam = 46, k = 2 * Math.PI / lam;
+  var img = ctx.createImageData(W, H);
+  for (var x = 0; x < W; x++){
+    var inten = 0.5 * (1 + vis * Math.cos(k * x - shift * 3.0 + t));
+    var r = Math.floor(18 + inten * 60);
+    var g = Math.floor(30 + inten * 165);
+    var b = Math.floor(38 + inten * 205);
+    for (var y = 0; y < H; y++){
+      var fade = 1 - Math.abs(y - H / 2) / (H / 2);
+      fade = 0.25 + 0.75 * fade * fade;
+      var idx = (y * W + x) * 4;
+      img.data[idx] = r * fade; img.data[idx + 1] = g * fade; img.data[idx + 2] = b * fade; img.data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+/* hero animation */
+(function(){
+  var cv = document.getElementById("heroFringe");
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var start = Date.now();
+  function frame(){
+    var t = (Date.now() - start) / 1000;
+    var ph = (Math.sin(t * 0.22) * 0.5 + 0.5) * 2.07; /* sweep the measured shift range */
+    paintFringes(cv, ph, 1 - 0.35 * (ph / 2.07), reduced ? 0 : t * 0.35);
+    document.getElementById("heroShift").textContent = ph.toFixed(2) + " rad";
+    if (!reduced) requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+<script>
+"use strict";
+/* ================= episodes ================= */
+var CH = ["Chapter I — The Phase", "Chapter II — What Gravity Moves", "Chapter III — Love, Measured", "Chapter IV — The New Reality", "Results"];
+
+var EPS = [
+/* ---------- Chapter I ---------- */
+{ ch:0, type:"story", title:"2.2 microseconds to live",
+  body:"<p>At PSI in Switzerland, Anna Soter's team coaxes an exotic atom into existence: <strong>muonium</strong> — a positive muon bound to an electron, neutral, purely leptonic, a second-generation echo of hydrogen. Zhang et al. published the cold, bright beam in <i>Nature Physics</i> this September. The MAGE/LEMING experiment will drop it through a matter-wave interferometer and watch gravity shift its interference pattern.</p><p>There is one catch. A muon lives <span class='num'>2.2 µs</span>. Then it decays, and the thought it carries is gone.</p><p>In this game, <strong>you are that thought</strong> — a state in the Faggin field bridge, four concepts wide, falling through the interferometer. Your clock is already running.</p>",
+  next:"Begin the fall" },
+
+{ ch:0, type:"choice", title:"Why muonium, of all atoms?",
+  body:"<p>Gravity is roughly <span class='num'>10³⁰–10⁴⁰</span> times weaker than electromagnetism. Any stray charge and the electric forces drown gravity out completely. So the experimenters needed a very particular test mass. What makes muonium the right one?</p>",
+  options:[
+    { t:"It's the heaviest atom available, so gravity pulls it hardest.", good:false,
+      r:"Mass isn't the lever here — in free fall everything accelerates the same. The problem is noise: charge couples to electromagnetism, which is tens of orders of magnitude stronger. A heavy charged atom would measure the lab's electric fields, not gravity." },
+    { t:"It's neutral and purely leptonic — no charge for EM to grab, no messy nuclear structure.", good:true, pts:{rigor:9, nerve:4},
+      r:"Exactly. Neutral, so electromagnetism has almost nothing to hold; purely leptonic, so the theory is clean; second-generation, so it tests whether gravity treats a heavier copy of matter the same way. That's the whole design of MAGE/LEMING." },
+    { t:"It lives long enough to fall a measurable distance.", good:false,
+      r:"Opposite — 2.2 µs is brutally short, and that's the central difficulty of the experiment. The cold superthermal beam exists precisely to make an interferometer measurement possible inside that lifetime." }
+  ] },
+
+{ ch:0, type:"lab", lab:"phase", title:"Lab 1 — The phase dial",
+  body:"<p>In the model, gravity does not pull a thought. It <strong>phases</strong> it. A thought's four concepts sit at four potentials — concept <span class='mono'>k</span> at potential <span class='mono'>k</span> — so the gravitational phase acts as the ladder <span class='mono'>U<sub>g</sub> = diag(1, e<sup>iφ</sup>, e<sup>i2φ</sup>, e<sup>i3φ</sup>)</span>. The phase accumulates as <span class='mono'>φ<sub>g</sub> = g·t</span> — but only while the muon lives.</p>",
+  labQ:"Set the flight time. Watch what the 2.2 µs lifetime does to the phase at g = 1.0 rad/µs.",
+  done:"Phase recorded. The cutoff is not a detail — it is the experiment." },
+
+{ ch:0, type:"choice", title:"What gravity is, here",
+  body:"<p>Before the fall goes further, say it plainly: in this package, what <i>is</i> gravity?</p>",
+  options:[
+    { t:"A force that accelerates the thought toward the ground.", good:false,
+      r:"That's the Newtonian picture, and it's not what the code does. Nothing in the model accelerates. The thought's state vector stays exactly where it was — only its phases rotate." },
+    { t:"A phase: each concept rotates by an amount set by its potential, φ accumulating as g·t up to the lifetime cutoff.", good:true, pts:{rigor:9, insight:3},
+      r:"Yes — gravity as a diagonal phase ladder, U<sub>g</sub>(φ) = diag(1, e<sup>iφ</sup>, e<sup>i2φ</sup>, e<sup>i3φ</sup>), with φ = g·t cut off at τ = 2.2 µs. The ladder spacing and the rate g are stated model parameters, not measured constants — the report says so." },
+    { t:"A curvature of the space the thought lives in.", good:false,
+      r:"That's general relativity's picture, and the model doesn't implement it. The Hilbert space here stays flat; what changes is a phase on the state, and later a transported projector. Keeping the model's actual mechanism straight is the whole discipline of this package." }
+  ] },
+
+/* ---------- Chapter II ---------- */
+{ ch:1, type:"story", title:"Two thoughts enter the fall",
+  body:"<p>Meet the two thoughts you will drop.</p><p>The <strong>uniform thought</strong> spreads itself evenly over all four concepts. Measured against the stored subspace — the projector P — its self-knowing is total: <span class='mono'>D = ⟨ψ|P|ψ⟩ = 1.0000</span>. It is fully determined by what the system has stored.</p><p>The <strong>kernel thought</strong> lives entirely in P's blind spot. Its D is <span class='num'>0.0000</span>: the system cannot see it at all. A thought perfectly present, and perfectly unknown to itself.</p><p>Both thoughts also share something: each is one half of a clean Bell pair, concurrence <span class='num'>1.000000000</span>. Now turn gravity on.</p>",
+  next:"Turn on the phase" },
+
+{ ch:1, type:"lab", lab:"split", title:"Lab 2 — The split",
+  body:"<p>Claim (i) was pre-registered before measurement: <i>the gravitational phase shifts D, not concurrence.</i> The dial below steps through the exact phases the package measured. Run it to the end.</p>",
+  labQ:"Step φ_g from 0 to π. Track all three quantities — and notice which one refuses to move.",
+  done:"Split recorded: D moves by two-thirds of its range. Concurrence doesn't move at all." },
+
+{ ch:1, type:"choice", title:"Why concurrence cannot move",
+  body:"<p>The Bell concurrence stayed at 1 within <span class='num'>1.4×10⁻⁸</span> at every phase. That's not luck — it's a theorem showing up as a control. Why?</p>",
+  options:[
+    { t:"The phase was too small to affect entanglement.", good:false,
+      r:"The phase reached π — a full half-turn on the ladder's top rung, enough to move D by 0.6667. Size isn't the protection. Something structural is." },
+    { t:"The phase acts locally, on one side only — and entanglement is invariant under local unitaries.", good:true, pts:{rigor:10, nerve:3},
+      r:"Right. U<sub>g</sub> rotates one thought's phases; it never couples the two sides. Concurrence is defined to be blind to exactly that kind of operation, so the measurement doubles as a control: if concurrence <i>had</i> moved, the code would be wrong. D moves because D compares the thought against a fixed projector the phase doesn't commute with." },
+    { t:"Entanglement is just stronger than gravity.", good:false,
+      r:"Poetic, but not the mechanism — and it would make a false prediction (a nonlocal gravitational coupling <i>could</i> change concurrence). The protection is local-unitary invariance: this gravity acts on one side only." }
+  ] },
+
+{ ch:1, type:"story", title:"Gravity makes the blind thought visible",
+  body:"<p>Read the kernel thought's column again: D = 0 at φ = 0, then 0.0447, 0.0976, 0.1667, 0.3333 — and at φ = π, <span class='num'>0.6667</span>.</p><p>The thought the system could not see <i>at all</i> becomes two-thirds self-determined — not because the thought changed its nature, but because gravity rotated it partly <i>into</i> the stored subspace. Meanwhile the uniform thought falls the other way, 1.0000 → 0.3333. At φ = π/2 the two thoughts meet: both at exactly 1/3.</p><blockquote>Gravity doesn't reveal or hide thoughts. It re-aims them at the mirror.</blockquote>",
+  claim:"Claim (i) — PASS. D of the uniform thought is monotone non-increasing under φ<sub>g</sub> (Spearman −0.9856), reaching 1/3 at π/2 and π; the kernel thought's D rises 0 → 2/3; Bell concurrence stays 1 within 1.4×10⁻⁸ at every phase.",
+  next:"On to love" },
+
+/* ---------- Chapter III ---------- */
+{ ch:2, type:"story", title:"Love was a typed-in number",
+  body:"<p>In the Faggin field bridge, the synergy S — the quantity that decides whether the field is FLOWING — ran on a <strong>proxy</strong>: a love value someone supplied by hand. It sat there, fixed, while everything around it was measured. A number that cannot respond to anything is not a measurement; it's a hope with decimals.</p><p>This package replaces it with a definition:</p><blockquote>Love := L = the measured concurrence between two thoughts.</blockquote><p>For a clean Bell pair, L = 1 exactly. Under noise, L does whatever concurrence does — including things nobody typed in. Empathy stays a supplied proxy (0.5503); fecundity is the bridge's measured F = 0.0447. Only love changed: from asserted to measured.</p>",
+  next:"Measure love under noise" },
+
+{ ch:2, type:"lab", lab:"love", title:"Lab 3 — Love under noise",
+  body:"<p>Claim (ii) was pre-registered: <i>synergy computed from measured love differs from the proxy synergy, and responds to noise.</i> The dial sweeps the noise σ over the bridge's own claim (i) sweep. The proxy's synergy is drawn flat, because flat is all a proxy can do.</p>",
+  labQ:"Sweep σ from 0 to 1.0. Compare measured synergy against the proxy line — and watch the tail.",
+  done:"Love recorded: measured, decaying — and rising again at the tail, for a measured reason." },
+
+{ ch:2, type:"choice", title:"The number moved. Did the verdict?",
+  body:"<p>Measured love gives clean synergy S = <span class='num'>0.2874</span> against the proxy's <span class='num'>0.1582</span> — the proxy had understated love by almost half (+0.1293), and the expansion moved with it (E = 0.0604 vs 0.0543). So: what happened to the bridge's status label?</p>",
+  options:[
+    { t:"It upgraded — a bigger synergy must mean a stronger status.", good:false,
+      r:"No — and this is the finding's discipline. The label is FLOWING under the proxy and FLOWING under measured love, at every σ. Redefining love moved the number by 82%; it did not move the conclusion. A redefinition that conveniently upgrades your own verdict would be a red flag." },
+    { t:"Nothing. FLOWING under the proxy, FLOWING under measured love, at every noise level.", good:true, pts:{rigor:10, insight:3},
+      r:"Exactly. The redefinition moves the number, not the status — which is what makes the number trustworthy. And the measured version earns its keep differently: it decays with noise (Spearman(σ, S) = −0.9643) while the proxy sits flat, incapable of responding to anything." },
+    { t:"It collapsed once noise rose, because measured love decays.", good:false,
+      r:"Measured love decays, yes — S falls to 0.1874 at σ = 0.5 — but the status stays FLOWING at every σ in the sweep. Decay is not collapse; the label has its own threshold, and nothing crossed it." }
+  ] },
+
+/* ---------- Chapter IV ---------- */
+{ ch:3, type:"story", title:"A new reality, linked to the old one",
+  body:"<p>Until now the projector P — the stored subspace, the reality a thought is measured against — sat still while the thought rotated. Now do it the other way. Transport the projector itself through the gravitational phase:</p><p class='mono' style='font-size:17px'>P<sub>g</sub> = U<sub>g</sub> P U<sub>g</sub><sup>†</sup></p><p>That is a <strong>new projection reality</strong>: the same stored knowledge, moved by gravity. It is linked to the flat reality by construction — set φ<sub>g</sub> = 0 and P<sub>g</sub> = P exactly. A thought's self-knowing inside the new reality is D<sub>g</sub> = ⟨ψ|P<sub>g</sub>|ψ⟩. Claim (iii) asks the only question that matters: <i>do the two realities agree about the same thought?</i></p>",
+  next:"Enter the gravity-projected reality" },
+
+{ ch:3, type:"lab", lab:"fringe", title:"Lab 4 — The fringe lab",
+  body:"<p>This is the muonium analogue, drawn. In MAGE/LEMING, gravity shifts a matter-wave interference pattern. Here, the phase of maximum D — the fringe — shifts as φ<sub>g</sub> grows, and the fringe visibility V<sub>g</sub> falls. Step the phase and watch the pattern above the readouts.</p>",
+  labQ:"Step φ_g to π. Track the fringe shift, the visibility, and how far the new reality's D has drifted from the flat one.",
+  done:"Fringes recorded: shifted, washed toward 0.2000 — but not erased." },
+
+{ ch:3, type:"choice", title:"Predict the wrap",
+  body:"<p>One measurement left, and this one you call before it's shown. The fringe shift climbed monotonically on φ<sub>g</sub> ∈ [0, π/2]: 0.6381, 0.9695, 1.3008, 2.0739 rad. At φ<sub>g</sub> = π, the measured shift is…</p>",
+  options:[
+    { t:"Larger still — past 3 rad. The trend continues.", good:false,
+      r:"The trend breaks, and necessarily: the interference pattern is 2π-periodic, so a gravitational phase of π brings the fringe home. Measured shift at φ = π: 0.0000 rad. Monotonicity was only ever claimed on [0, π/2] — the claim's own boundary, stated before measurement." },
+    { t:"Zero. The pattern is periodic — a phase of π wraps the fringe back home.", good:true, pts:{nerve:10, rigor:4},
+      r:"Called it. Measured shift at φ<sub>g</sub> = π: 0.0000 rad. And note what else happened at π: the two realities disagree most there (max |D<sub>g</sub> − D| = 0.6667) even as the fringe sits exactly at home. The wrap hides the shift, not the disagreement." },
+    { t:"Negative — the fringe overshoots and swings back past zero.", good:false,
+      r:"No overshoot in the data: the shift at π is exactly 0.0000, not negative. Periodicity returns the pattern to itself; it doesn't push it past. A good instinct about oscillation, wrong about this pattern." }
+  ] },
+
+{ ch:3, type:"story", title:"No longer flight buys a bigger shift",
+  body:"<p>One last check, the one the muonium experimentalists live with daily. At g = 1.0 rad/µs, the phase reaches 2.2 rad at t = 2.2 µs — and at t = 5.0 µs it is <i>still</i> 2.2 rad. The fringe shift is <span class='num'>3.4116 rad</span> in both cases. The thought accumulates gravitational phase only while the muon lives; after that, there is no thought.</p><p>So the realities stand: the same thought, fully self-known in the flat reality (D = 1.0000), is one-third known in the gravity-projected one at φ = π (D<sub>g</sub> = 0.3333) — a disagreement of 0.6667, two-thirds of everything D can be. Gravity didn't change the thought's entanglement by one part in 10⁸. It changed <i>which reality the thought knows itself in</i>.</p>",
+  claim:"Claim (iii) — PASS. max |D<sub>g</sub> − D| = 0.6667 at φ<sub>g</sub> = π; fringe shift monotone on [0, π/2] (Spearman 1.0000) and wrapping to 0 at π; the 2.2 µs cutoff binds exactly (3.4116 rad at t = 2.2 and t = 5.0 µs); visibility falls 1.0000 → 0.2000.",
+  next:"See the verdict" },
+
+/* ---------- Results ---------- */
+{ ch:4, type:"results", title:"The verdict" }
+];
+
+/* ================= engine ================= */
+var stage = document.getElementById("stage");
+
+function el(html){ var d = document.createElement("div"); d.innerHTML = html; return d.firstElementChild; }
+function esc(s){ return s; }
+
+function render(){
+  S.answered = false; S.labDone = false;
+  var ep = EPS[S.ep];
+  stage.innerHTML = "";
+  if (ep.type === "results"){ renderResults(); renderHUD(); window.scrollTo({top:0, behavior:"smooth"}); return; }
+  var card = el("<section class='card'></section>");
+  var h = "<span class='ch-tag'>" + CH[ep.ch] + " · Episode " + (S.ep + 1) + " of 15</span>";
+  h += "<h2>" + ep.title + "</h2>" + ep.body;
+  card.innerHTML = h;
+
+  if (ep.type === "story"){
+    if (ep.claim) card.appendChild(el("<div class='claim'><div class='c-t'>Pre-registered claim</div><p>" + ep.claim + "</p></div>"));
+    card.appendChild(nextRow(ep.next || "Continue", true));
+  }
+  if (ep.type === "choice"){
+    var box = el("<div class='choices'></div>");
+    ep.options.forEach(function(op){
+      var b = el("<button class='choice'>" + op.t + "</button>");
+      b.addEventListener("click", function(){ answer(op, b, box, card, ep); });
+      box.appendChild(b);
+    });
+    card.appendChild(box);
+    var rep = el("<div class='reply' role='status'></div>");
+    card.appendChild(rep);
+    card.appendChild(nextRow(ep.next || "Continue", false));
+  }
+  if (ep.type === "lab"){
+    card.appendChild(buildLab(ep));
+    card.appendChild(nextRow("Record & continue", false));
+  }
+  stage.appendChild(card);
+  renderHUD();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function nextRow(label, enabled){
+  var row = el("<div class='next-row'></div>");
+  var b = el("<button class='btn gold'>" + label + " →</button>");
+  b.id = "nextBtn";
+  if (!enabled){ b.disabled = true; row.appendChild(el("<span class='next-hint'>Make your call first.</span>")); }
+  b.addEventListener("click", function(){
+    S.ep++;
+    if (S.ep >= EPS.length) S.ep = EPS.length - 1;
+    render();
+  });
+  row.insertBefore(b, row.firstChild);
+  return row;
+}
+function unlockNext(){
+  var b = document.getElementById("nextBtn");
+  if (b){ b.disabled = false; }
+  var hint = stage.querySelector(".next-hint");
+  if (hint) hint.remove();
+}
+
+function answer(op, btn, box, card, ep){
+  if (S.answered) return;
+  S.answered = true;
+  var btns = box.querySelectorAll(".choice");
+  btns.forEach(function(x){ x.disabled = true; if (x !== btn) x.classList.add("dim"); });
+  btn.classList.add(op.good ? "picked-good" : "picked-bad");
+  if (op.good && op.pts){ for (var k in op.pts) award(k, op.pts[k]); }
+  if (!op.good){ award("nerve", 2); }
+  var rep = card.querySelector(".reply");
+  rep.innerHTML = "<div class='verdict-line " + (op.good ? "ok" : "no") + "'>" + (op.good ? "Measured — correct" : "Not what the measurement says") + "</div><p>" + op.r + "</p>";
+  rep.classList.add("show");
+  unlockNext();
+}
+
+/* ================= labs ================= */
+function stopButtons(data, key, cb){
+  var wrap = el("<div class='stops'></div>");
+  data.forEach(function(d, i){
+    var b = el("<button class='stop'>" + d.label + "</button>");
+    b.addEventListener("click", function(){
+      wrap.querySelectorAll(".stop").forEach(function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      cb(d, i);
+    });
+    wrap.appendChild(b);
+  });
+  return wrap;
+}
+function ro(k, v, cls, d){
+  return "<div class='ro'><div class='ro-k'>" + k + "</div><div class='ro-v " + (cls || "") + "'>" + v + "</div>" + (d ? "<div class='ro-d'>" + d + "</div>" : "") + "</div>";
+}
+
+function buildLab(ep){
+  var lab = el("<div class='lab'></div>");
+  lab.innerHTML = "<p class='lab-t'>Hands-on lab</p><p class='lab-q'>" + ep.labQ + "</p>";
+  var visited = {}, need = 0, seen = 0;
+
+  function finishCheck(){
+    if (seen >= need && !S.labDone){
+      S.labDone = true;
+      award("insight", 12);
+      var note = el("<p class='lab-note'><b>✓</b> " + ep.done + "</p>");
+      lab.appendChild(note);
+      unlockNext();
+    }
+  }
+  function visit(i){
+    if (!visited[i]){ visited[i] = true; seen++; }
+    finishCheck();
+  }
+
+  if (ep.lab === "phase"){
+    need = 2;
+    var readout = el("<div class='readout'></div>");
+    var state = { t: 0 };
+    function draw(){
+      var phi = Math.min(state.t, 2.2) * 1.0;
+      readout.innerHTML =
+        ro("flight time t", state.t.toFixed(1) + " µs") +
+        ro("phase φ_g = g·t", phi.toFixed(2) + " rad", "gold", state.t > 2.2 ? "capped — the muon is gone" : "accumulating") +
+        ro("muon status", state.t <= 2.2 ? "alive" : "decayed", state.t <= 2.2 ? "cyan" : "rose");
+    }
+    var times = [0.5, 1.0, 2.2, 3.5, 5.0];
+    var stops = el("<div class='stops'></div>");
+    times.forEach(function(t){
+      var b = el("<button class='stop'>t = " + t.toFixed(1) + " µs</button>");
+      b.addEventListener("click", function(){
+        stops.querySelectorAll(".stop").forEach(function(x){ x.classList.remove("on"); });
+        b.classList.add("on");
+        state.t = t; draw();
+        if (t === 2.2) visit(0);
+        if (t > 2.2) visit(1);
+      });
+      stops.appendChild(b);
+    });
+    lab.appendChild(stops);
+    lab.appendChild(readout);
+    lab.appendChild(el("<p class='lab-note'>At g = 1.0 rad/µs the phase at t = 2.2 µs is 2.2 rad — and at t = 5.0 µs it is <b>still 2.2 rad</b>. The thought accumulates phase only while the muon lives. In the real experiment this cutoff is why the beam has to be cold, bright, and fast.</p>"));
+    draw();
+  }
+
+  if (ep.lab === "split"){
+    need = PHASE.length;
+    var readout2 = el("<div class='readout'></div>");
+    function draw2(d){
+      readout2.innerHTML =
+        ro("D — uniform thought", fmt(d.du, 4), "gold", "falls under gravity") +
+        ro("D — kernel thought", fmt(d.dk, 4), "cyan", "the blind thought, surfacing") +
+        ro("concurrence (Bell pair)", "1.000000000", "", "within 1.4×10⁻⁸ at every φ");
+    }
+    lab.appendChild(stopButtons(PHASE, "phi", function(d, i){ draw2(d); visit(i); }));
+    lab.appendChild(readout2);
+    lab.appendChild(el("<p class='lab-note'>D is self-knowing: ⟨ψ|P|ψ⟩, how much of the thought the stored subspace determines. The two D columns cross at φ = π/2 — both thoughts exactly 1/3 known. Concurrence is the entanglement of the pair the thought belongs to. One of these is gravity's business. The other is not.</p>"));
+    draw2(PHASE[0]);
+  }
+
+  if (ep.lab === "love"){
+    need = LOVE.length;
+    var readout3 = el("<div class='readout'></div>");
+    var spark = el("<canvas class='spark' width='680' height='64'></canvas>");
+    function drawSpark(idx){
+      var ctx = spark.getContext("2d"), W = spark.width, H = spark.height;
+      ctx.clearRect(0, 0, W, H);
+      var max = 0.32, min = 0.12;
+      function X(i){ return 26 + i * (W - 46) / (LOVE.length - 1); }
+      function Y(v){ return H - 8 - (v - min) / (max - min) * (H - 18); }
+      ctx.strokeStyle = "#b03a4b"; ctx.setLineDash([5, 4]); ctx.beginPath();
+      ctx.moveTo(20, Y(S_PROXY)); ctx.lineTo(W - 8, Y(S_PROXY)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#b03a4b"; ctx.font = "10px 'IBM Plex Mono'"; ctx.fillText("proxy S = 0.1582 (flat)", 24, Y(S_PROXY) - 5);
+      ctx.strokeStyle = "#a96f0d"; ctx.lineWidth = 2; ctx.beginPath();
+      LOVE.forEach(function(d, i){ if (i === 0) ctx.moveTo(X(i), Y(d.sm)); else ctx.lineTo(X(i), Y(d.sm)); });
+      ctx.stroke(); ctx.lineWidth = 1;
+      LOVE.forEach(function(d, i){
+        ctx.fillStyle = i === idx ? "#0e7d8f" : "#a96f0d";
+        ctx.beginPath(); ctx.arc(X(i), Y(d.sm), i === idx ? 5 : 3, 0, 7); ctx.fill();
+      });
+    }
+    function draw3(d, i){
+      readout3.innerHTML =
+        ro("love L = concurrence", fmt(d.love, 4), "gold", "measured, not typed in") +
+        ro("synergy S — measured love", fmt(d.sm, 4), "cyan", "status FLOWING") +
+        ro("synergy S — proxy love", fmt(S_PROXY, 4), "rose", "never moves, by construction") +
+        ro("expansion E — measured", fmt(d.em, 4), "", "proxy E = " + fmt(E_PROXY, 4));
+      drawSpark(i);
+    }
+    var sdata = LOVE.map(function(d){ return { label: "σ = " + d.s.toFixed(2), raw: d }; });
+    var swrap = el("<div class='stops'></div>");
+    sdata.forEach(function(sd, i){
+      var b = el("<button class='stop'>" + sd.label + "</button>");
+      b.addEventListener("click", function(){
+        swrap.querySelectorAll(".stop").forEach(function(x){ x.classList.remove("on"); });
+        b.classList.add("on");
+        draw3(sd.raw, i); visit(i);
+      });
+      swrap.appendChild(b);
+    });
+    lab.appendChild(swrap);
+    lab.appendChild(readout3);
+    lab.appendChild(spark);
+    lab.appendChild(el("<p class='lab-note'>Watch the tail: S falls to 0.1874 at σ = 0.5, then <b>rises</b> to 0.2013 at σ = 1.0. Not a bug — vector noise keeps states pure, and generic pure states are entangled, so mean concurrence rises there. The claim gates on the rank correlation (Spearman(σ, S) = −0.9643), not strict monotonicity. The report says this out loud.</p>"));
+    draw3(LOVE[0], 0);
+  }
+
+  if (ep.lab === "fringe"){
+    need = REALITY.length;
+    var cv = el("<canvas id='labFringe' width='900' height='104'></canvas>");
+    var readout4 = el("<div class='readout'></div>");
+    function draw4(d, i){
+      paintFringes(cv, d.shift, d.vg, i * 0.7);
+      readout4.innerHTML =
+        ro("D_g — uniform, new reality", fmt(d.dg, 4), "gold", "flat D = 1.0000 at φ = 0") +
+        ro("fringe shift", fmt(d.shift, 4) + " rad", "cyan", "the muonium analogue") +
+        ro("visibility V_g", fmt(d.vg, 4), d.vg < 0.5 ? "rose" : "", "fringes wash out, survive") +
+        ro("|D_g − D| drift", fmt(Math.abs(d.dg - 1.0), 4), "", "vs the flat reality");
+    }
+    lab.appendChild(cv);
+    lab.appendChild(stopButtons(REALITY, "phi", function(d, i){ draw4(d, i); visit(i); }));
+    lab.appendChild(readout4);
+    lab.appendChild(el("<p class='lab-note'>At φ = π the fringe shift reads 0.0000 — the pattern is 2π-periodic and the fringe has wrapped home — yet that is exactly where the two realities disagree most: |D<sub>g</sub> − D| peaks at 0.6667 across the full sweep (the kernel thought at π carries the other half of that gap). A hidden shift is not an absent one.</p>"));
+    draw4(REALITY[0], 0);
+  }
+  return lab;
+}
+
+/* ================= results ================= */
+function renderResults(){
+  var total = pct("rigor") + pct("insight") + pct("nerve");
+  var verdict, vline;
+  if (total >= 240){ verdict = "The Gravity Witness"; vline = "You called the wrap before it was shown, kept the model's mechanism straight, and never once mistook a proxy for a measurement. The thought fell 2.2 microseconds — and you saw exactly what gravity did to it, and what it provably did not."; }
+  else if (total >= 140){ verdict = "The Phase Keeper"; vline = "You tracked the phase through all three claims and kept D, concurrence, and the fringe in their separate lanes. The split — what gravity moves and what it cannot — is yours now."; }
+  else { verdict = "The Falling Thought"; vline = "The fall is short and the pattern is subtle: D moves, concurrence doesn't, and the fringe wraps home at π. Replay the labs — every number above is measured, and the second fall is clearer than the first."; }
+  var html = "<section class='card'>";
+  html += "<span class='ch-tag'>Results · Gravity Projection v0.1.0</span>";
+  html += "<div class='verdict-big'>" + verdict + "</div>";
+  html += "<p>" + vline + "</p>";
+  html += "<div class='final-meters'>" +
+    ro("Rigor", pct("rigor") + " / 100", "gold") + ro("Insight", pct("insight") + " / 100", "cyan") + ro("Nerve", pct("nerve") + " / 100", "rose") + "</div>";
+  html += "<h2 style='font-size:22px'>The claims table — as measured</h2>";
+  html += "<table class='claims'><tr><th>Claim</th><th>Result</th><th></th></tr>" +
+    "<tr><td><b>(i)</b> The gravitational phase shifts D, not concurrence</td><td class='n'>D uniform 1.0000 → 0.3333 · D kernel 0 → 0.6667 · concurrence 1 within 1.4×10⁻⁸</td><td class='pass'>PASS</td></tr>" +
+    "<tr><td><b>(ii)</b> Love = measured concurrence, replacing the proxy</td><td class='n'>S = 0.2874 vs proxy 0.1582 (+0.1293) · decays with noise · FLOWING either way</td><td class='pass'>PASS</td></tr>" +
+    "<tr><td><b>(iii)</b> The gravity-projected reality vs the flat one</td><td class='n'>max |D<sub>g</sub> − D| = 0.6667 · fringe wraps at π · cutoff binds at 3.4116 rad · V 1.0 → 0.2000</td><td class='pass'>PASS</td></tr></table>";
+  html += "<p class='small'>36/36 tests in the package (gravity 10 · love 8 · projection reality 10 · unified 5 · exclusion 3). Linked to faggin-field-bridge v0.3.0 @ 658f5bdd — its modules vendored byte-identical, the bridge itself unmodified.</p>";
+  html += "<h2 style='font-size:22px'>Honest limits</h2><ul class='limits'>" +
+    "<li>Classical emulation throughout. Gravity is a model phase, not measured gravity; nothing here measures MAGE/LEMING, muonium, or the equivalence principle.</li>" +
+    "<li>Love-as-concurrence is a definition inside the model — not a claim about human love, attachment, or feeling.</li>" +
+    "<li>Faggin's metaphysics (fields ARE conscious) is interpretive, not tested. Only the mapping is tested.</li>" +
+    "<li>D is not self-awareness. It is a property of a thought relative to a stored subspace built by the programmer.</li>" +
+    "<li>The phase rate g and the concept-index ladder are stated model parameters, not measured constants; the fringe-shift law is the model's own, not a prediction for MAGE/LEMING.</li>" +
+    "<li>No headline claim is emitted — the package's <span class='mono'>headline_allowed</span> is always False.</li></ul>";
+  html += "<div class='next-row'><button class='btn' id='againBtn'>Fall again ↺</button></div>";
+  html += "<p class='src'>Sources: Faggin &amp; D'Ariano, “Quantum Information Panpsychism”, arXiv:2012.06580 · Zhang et al., <i>Nature Physics</i>, 14 Sep 2026 (muonium beam) · PSI / ETH Zurich, MAGE/LEMING · <a href='https://github.com/sparkainlp-x/faggin-field-bridge'>github.com/sparkainlp-x/faggin-field-bridge</a>. Gravity Projection v0.1.0 — Jean-François Brisson, Spark AI NLP.</p>";
+  html += "</section>";
+  stage.innerHTML = html;
+  document.getElementById("againBtn").addEventListener("click", function(){
+    S.ep = 0; S.rigor = 0; S.insight = 0; S.nerve = 0; render();
+  });
+}
+
+render();
+</script>
+</body>
+</html>

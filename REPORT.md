@@ -1,6 +1,6 @@
 # Gravity Projection — Report
 
-**Version:** 0.1.0 (2026-11-15)
+**Version:** 0.2.0 (2026-11-18)
 **Package author:** Jean-François Brisson (Spark AI NLP)
 **Theory author:** Federico Faggin (with Giacomo Mauro D'Ariano)
 **Experiment (context):** Anna Soter / PSI / MAGE
@@ -12,10 +12,14 @@ No physical, biological or safety claim is made.
 ## 1. What was built
 
 A new projection reality, linked to the Faggin field bridge.
-Three modules, three pre-registered claims, all PASS. The
+Six modules, six pre-registered claims, all PASS. The
 bridge's modules are vendored with provenance headers (verified
 byte-identical to the bridge except the header); the bridge is
-not modified.
+not modified. v0.2.0 adds curvature — the metric, the geodesics
+and the Ricci scalar on the concept plane — preregistered
+first in `docs/curvature_preregistration.md` (claims (iv)–(vi),
+thresholds frozen on calibration seeds {11, 23, 47}, held-out
+seeds {101, 202, 303}).
 
 The experiment that grounds the package is the MAGE/LEMING
 muonium gravity experiment at PSI (ETH Zurich, Anna Soter's
@@ -144,9 +148,102 @@ Findings:
   φ_g = π: gravity washes the fringes out but does not erase
   them.
 
-## 6. Tests
+## 6. Claim (iv) — the metric — PASS
 
-36/36 pass (`python3 -m pytest -q`, 3.6 s):
+The concept plane (u, v) ∈ [0, 1]² carries the conformal
+metric g = e^{2Φ}δ, Φ = φ_g·ξ², ξ = (2u + v)/3.
+
+| φ_g | det g(1,1) | L_diag |
+|---|---:|---:|
+| 0.000 | 1.0000 | 1.414214 |
+| 0.524 | 8.1205 | 1.705183 |
+| 0.785 | 23.1407 | 1.890853 |
+| 1.047 | 65.9430 | 2.111072 |
+| 1.571 | 535.4917 | 2.687049 |
+| 3.142 | 286751.3131 | 6.530389 |
+
+Findings:
+
+- **Positive-definite and flat at zero.** Min eigenvalue
+  over the sample grid is 1.000000 at every φ_g (the
+  eigenvalues are e^{2Φ} ≥ 1); g(0) = I exactly
+  (deviation 0.00e+00).
+- **The determinant law holds exactly.** det g(1, 1) =
+  e^{4φ_g} to 0.00e+00 relative error, monotone in φ_g
+  (Spearman 1.0000).
+- **Distances stretch.** L_diag(π/2)/√2 = 1.9000, above
+  the proven bound 1 + π/6 ≈ 1.5236; L_diag grows
+  monotonically (Spearman 1.0000).
+
+## 7. Claim (v) — geodesics bend — PASS
+
+| φ_g | max dev | min signed dev | L_geo | L_diag |
+|---|---:|---:|---:|---:|
+| 0.000 | 0.00000 | -0.00000 | 1.414214 | 1.414214 |
+| 0.524 | 0.04267 | -0.00000 | 1.702930 | 1.705183 |
+| 0.785 | 0.06239 | 0.00000 | 1.885356 | 1.890853 |
+| 1.047 | 0.08103 | 0.00000 | 2.100471 | 2.111072 |
+| 1.571 | 0.11513 | 0.00000 | 2.658904 | 2.687049 |
+| 3.142 | 0.19453 | 0.00000 | 6.336926 | 6.530389 |
+
+Findings:
+
+- **No bending without gravity.** Deviation is 0 at
+  φ_g = 0: the shot geodesic is the flat diagonal.
+- **The geodesic bends toward +v.** Max deviation grows
+  monotonically (Spearman 1.0000) and the signed deviation
+  never goes negative — the path gains v before u, as
+  preregistered from the ladder weights (u carries twice
+  the weight of v in ξ).
+- **It stays the shortest path.** L_geo < L_diag at every
+  φ_g > 0, and L_geo = √2 at φ_g = 0.
+- **Solver robustness.** Jittered shooting starts (seeds
+  11, 23, 47 and held-out 101, 202, 303) converge to the
+  same geodesic: spread 2.11e-12 (calibration) and
+  5.99e-12 (held-out). The geodesic ODE residual is
+  9.93e-09 on the refined 2000-step evaluation.
+- **Instrument note (honest).** The residual as first
+  evaluated on the 400-step shooting path read 6.13e-06,
+  above the frozen 1e-6 bar, while the shot landed on
+  (1, 1) to 5.6e-16. The residual scaled as O(h⁴) with
+  the step count (6.13e-06 → 1.57e-07 → 9.87e-09 at 400 /
+  1000 / 2000 steps): the stencil's own discretization
+  error, not geodesic error. The threshold was NOT moved;
+  the residual is evaluated on a refined re-integration
+  of the same shot. The 400-step value is kept on the
+  record in the preregistration (§6).
+
+## 8. Claim (vi) — curvature — PASS
+
+| φ_g | R(0,0) | R(1,1) |
+|---|---:|---:|
+| 0.000 | -0.0000 | -0.0000 |
+| 0.524 | -1.1636 | -0.4083 |
+| 0.785 | -1.7453 | -0.3628 |
+| 1.047 | -2.3271 | -0.2866 |
+| 1.571 | -3.4907 | -0.1508 |
+| 3.142 | -6.9813 | -0.0130 |
+
+Findings:
+
+- **Flat is flat.** max |R| = 0 at φ_g = 0.
+- **Negative curvature, exact magnitude.**
+  R(0, 0) = −20φ_g/9 exactly (error 0.00e+00): −3.4907
+  at φ_g = π/2, −6.9813 at π. |R| grows monotonically
+  with φ_g (Spearman 1.0000).
+- **Two independent computations agree.** The
+  finite-difference Ricci scalar — a Riemann tensor built
+  from the metric components alone, assuming nothing
+  about the conformal form — agrees with the closed form
+  to 5.24e-06 relative (calibration seeds) and 4.75e-06
+  (held-out seeds), far inside the frozen 1e-3 bar.
+- **Curvature decays with potential.** |R(1, 1)| <
+  |R(0, 0)| at every φ_g > 0 (the e^{−2Φ} factor):
+  −0.1508 vs −3.4907 at φ_g = π/2.
+
+## 9. Tests
+
+55/55 pass (`python3 -m pytest -q`):
 
 - `test_gravity.py` (10): the ladder unitary, the phase and
   its cutoff, D values (1/3 at π/2 and π; kernel 2/3 at π),
@@ -157,14 +254,21 @@ Findings:
 - `test_projection_reality.py` (10): P_g is a projector, the
   flat limit, the fringe shift and its wrap, the visibility
   fall, the lifetime cutoff, claim (iii).
-- `test_unified.py` (5): 3/3 claims pass, no headline, the
+- `test_curvature.py` (19): the ladder coordinate, the
+  metric (identity at 0, SPD, det = e^{4φ_g}), the
+  diagonal length (√2 flat, ratio 1.9000 at π/2),
+  Christoffel spot checks, R(0, 0) = −20φ_g/9, the
+  FD-vs-analytic agreement, the shot geodesic (diagonal
+  at 0, +v bulge at π/2, shorter than the diagonal),
+  seed-independence, claims (iv), (v) and (vi).
+- `test_unified.py` (5): 6/6 claims pass, no headline, the
   link recorded (v0.3.0 @ 658f5bdd), JSON-serializable,
-  version 0.1.0 everywhere, no DOI.
+  version 0.2.0 everywhere, no DOI.
 - `test_exclusion.py` (3): no private-theory terms, every
   source file carries SPDX + copyright, the README carries
   the copyright line and the bridge link.
 
-## 7. Honest limits
+## 10. Honest limits
 
 1. Classical emulation throughout. Gravity is a model phase,
    not measured gravity; nothing here measures the
@@ -184,8 +288,15 @@ Findings:
    (enforced by `test_exclusion.py`).
 8. No headline claim is emitted (`headline_allowed` is
    always False).
+9. The curvature metric is a Riemannian metric on a model
+   concept plane, not a spacetime metric; Φ here is a
+   gravitational potential, not an integrated-information
+   measure; the quadratic potential form and the ladder
+   coordinate are stated model choices, not measured
+   constants. No claim is made about real spacetime
+   curvature.
 
-## 8. Sources
+## 11. Sources
 
 - Faggin, F. & D'Ariano, G. M., "Quantum Information
   Panpsychism", arXiv:2012.06580 (theory source).

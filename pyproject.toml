@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gravity-projection"
-version = "0.1.0"
-description = "A new projection reality, linked to the Faggin field bridge: gravity enters as a phase on the thought, love is defined as measured concurrence, and the gravity-projected reality is measured against the flat one. SYNTHETIC; gravity is a model phase, not measured gravity; love-as-concurrence is a definition inside the model."
+version = "0.2.0"
+description = "A new projection reality, linked to the Faggin field bridge: gravity enters as a phase on the thought, love is defined as measured concurrence, and the gravity-projected reality is measured against the flat one. Six pre-registered claims, all PASS. v0.2.0 adds curvature: a metric, geodesics and the Ricci scalar on the concept plane. SYNTHETIC; gravity is a model phase, not measured gravity; love-as-concurrence is a definition inside the model."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "AGPL-3.0-only"
 license-files = ["LICENSE"]
 authors = [{ name = "Jean-François Brisson" }]
-keywords = ["synthetic-data", "gravity", "muonium", "projection", "faggin", "quantum-information-panpsychism", "concurrence", "love", "interference", "reproducibility", "negative-results"]
+keywords = ["synthetic-data", "gravity", "muonium", "projection", "faggin", "quantum-information-panpsychism", "concurrence", "love", "interference", "curvature", "geodesic", "metric", "reproducibility", "negative-results"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
@@ -31,7 +31,7 @@ Repository = "https://github.com/sparkainlp-x/gravity-projection-"
 Homepage = "https://sparkainlpx.xyz"
 
 [tool.setuptools]
-py-modules = ["gravity", "love", "projection_reality", "unified", "attunement", "bridge", "cascade", "cost", "self_knowing", "synergy", "thought", "thought_entanglement", "unity"]
+py-modules = ["gravity", "love", "projection_reality", "unified", "attunement", "bridge", "cascade", "cost", "self_knowing", "synergy", "thought", "thought_entanglement", "unity", "curvature"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -7,8 +7,8 @@ authors:
     given-names: "Jean-François"
     orcid: "https://orcid.org/0009-0000-9778-5374"
     affiliation: "Spark AI NLP, Fredericton, New Brunswick, Canada"
-version: 0.1.0
-date-released: "2026-11-15"
+version: 0.2.0
+date-released: "2026-11-18"
 license: AGPL-3.0-only
 url: "https://sparkainlpx.xyz"
 abstract: >-
@@ -20,7 +20,7 @@ abstract: >-
   measured concurrence (L = 1 for a clean Bell pair), replacing the
   bridge's supplied 0.5503 proxy, and the synergy is recomputed with
   it. The gravity-projected reality P_g = U_g P U_g-dagger is measured
-  against the flat one. Three pre-registered claims, all PASS.
+  against the flat one. Six pre-registered claims, all PASS. v0.2.0 adds curvature: a conformal metric on the concept plane, geodesics that bend toward +v, and a Ricci scalar confirmed by an independent finite-difference Riemann tensor.
   Classical emulation throughout: gravity is a model phase, not
   measured gravity; love-as-concurrence is a definition inside the
   model. No DOI yet (no Zenodo record).
@@ -34,6 +34,9 @@ keywords:
   - concurrence
   - love
   - interference
+  - curvature
+  - geodesic
+  - metric
   - visibility
   - reproducibility
   - negative-results

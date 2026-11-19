@@ -1,1 +1,48 @@
-{"access_right":"open","creators":[{"affiliation":"Spark AI NLP, Fredericton, New Brunswick, Canada","name":"Brisson, Jean-François","orcid":"0009-0000-9778-5374"}],"description":"<p><strong>Gravity Projection</strong> is a SYNTHETIC, measured package and a new projection reality, linked to the Faggin Field Bridge v0.3.0 (head 658f5bdd). Gravity enters as a phase on the thought: the concept-index ladder U_g = diag(1, e^{i&phi;}, e^{i2&phi;}, e^{i3&phi;}), accumulating as &phi;_g = g &middot; t with t cut off at the muon lifetime 2.2 &micro;s -- the geometry of the MAGE/LEMING muonium gravity experiment at PSI (ETH Zurich, Anna Soter's team; Zhang et al., Nature Physics, 14 Sep 2026), which aims at the first direct free-fall test of muonium (target 10% on &Delta;g/g, eventually 1%; existing data already bound any anomaly below 10^-5). Love is defined as measured concurrence: L = 1 for a clean Bell pair, replacing the bridge's supplied 0.5503 proxy, and the synergy is recomputed with it. The gravity-projected reality P_g = U_g P U_g&dagger; is measured against the flat one: the realities disagree by up to 2/3 in D, the interference fringe shifts monotonically with the gravitational phase, and the visibility falls. Three pre-registered claims, all PASS. Classical emulation throughout: gravity is a model phase, not measured gravity; love-as-concurrence is a definition inside the model.</p>","keywords":["synthetic data","gravity","muonium","projection","Faggin","quantum information panpsychism","concurrence","love","interference","visibility","reproducibility","negative results","Python"],"language":"eng","license":"AGPL-3.0-only","related_identifiers":[{"identifier":"10.48550/arXiv.2012.06580","relation":"references","resource_type":"publication-preprint","scheme":"doi"},{"identifier":"10.5281/zenodo.23644437","relation":"references","resource_type":"publication","scheme":"doi"}],"title":"Gravity Projection: a new projection reality -- gravity as a phase, love as concurrence, linked to the Faggin field bridge","upload_type":"software","version":"0.1.0"}
+{
+  "access_right": "open",
+  "creators": [
+    {
+      "affiliation": "Spark AI NLP, Fredericton, New Brunswick, Canada",
+      "name": "Brisson, Jean-Fran\u00e7ois",
+      "orcid": "0009-0000-9778-5374"
+    }
+  ],
+  "description": "<p><strong>Gravity Projection</strong> is a SYNTHETIC, measured package and a new projection reality, linked to the Faggin Field Bridge v0.3.0 (head 658f5bdd). Gravity enters as a phase on the thought: the concept-index ladder U_g = diag(1, e^{i&phi;}, e^{i2&phi;}, e^{i3&phi;}), accumulating as &phi;_g = g &middot; t with t cut off at the muon lifetime 2.2 &micro;s -- the geometry of the MAGE/LEMING muonium gravity experiment at PSI (ETH Zurich, Anna Soter's team; Zhang et al., Nature Physics, 14 Sep 2026), which aims at the first direct free-fall test of muonium (target 10% on &Delta;g/g, eventually 1%; existing data already bound any anomaly below 10^-5). Love is defined as measured concurrence: L = 1 for a clean Bell pair, replacing the bridge's supplied 0.5503 proxy, and the synergy is recomputed with it. The gravity-projected reality P_g = U_g P U_g&dagger; is measured against the flat one: the realities disagree by up to 2/3 in D, the interference fringe shifts monotonically with the gravitational phase, and the visibility falls. Six pre-registered claims, all PASS. v0.2.0 adds curvature on the concept plane: a conformal metric g = e^{2&Phi;} &delta; with det g(1, 1) = e^{4&phi;}, geodesics from |00> to |11> that bend toward +v, and a Ricci scalar R = -(20&phi;/9)e^{-2&Phi;} confirmed by an independent finite-difference Riemann tensor. Classical emulation throughout: gravity is a model phase, not measured gravity; love-as-concurrence is a definition inside the model.</p>",
+  "keywords": [
+    "synthetic data",
+    "gravity",
+    "muonium",
+    "projection",
+    "Faggin",
+    "quantum information panpsychism",
+    "concurrence",
+    "love",
+    "interference",
+    "visibility",
+    "reproducibility",
+    "negative results",
+    "Python",
+    "curvature",
+    "geodesic",
+    "metric"
+  ],
+  "language": "eng",
+  "license": "AGPL-3.0-only",
+  "related_identifiers": [
+    {
+      "identifier": "10.48550/arXiv.2012.06580",
+      "relation": "references",
+      "resource_type": "publication-preprint",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.23644437",
+      "relation": "references",
+      "resource_type": "publication",
+      "scheme": "doi"
+    }
+  ],
+  "title": "Gravity Projection: a new projection reality -- gravity as a phase, love as concurrence, linked to the Faggin field bridge",
+  "upload_type": "software",
+  "version": "0.2.0"
+}

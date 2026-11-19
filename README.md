@@ -4,8 +4,9 @@ A new projection reality, linked to the Faggin field bridge.
 
 Gravity enters as a **phase** on the thought. Love is defined
 as **measured concurrence**. The gravity-projected reality is
-measured against the flat one. Three pre-registered claims, all
-PASS. Classical emulation throughout.
+measured against the flat one. **Curvature** adds the metric,
+the geodesics and the Ricci scalar on the concept plane. Six
+pre-registered claims, all PASS. Classical emulation throughout.
 
 ## The link
 
@@ -65,6 +66,26 @@ gravitational phase (and wraps at π, the pattern being
 equals the shift at t = 5.0 µs); the visibility falls from 1.0
 to 0.20 at φ_g = π.
 
+**Curvature** (`curvature.py`, preregistered in
+`docs/curvature_preregistration.md`). The concept plane
+(u, v) ∈ [0, 1]² — the two qubit coordinates of a thought,
+corners at the ladder indices k = 2a + b — carries a
+conformal metric g = e^{2Φ}δ with Φ = φ_g·ξ²,
+ξ = (2u + v)/3. Claim (iv) PASS: g is positive-definite,
+exactly flat at φ_g = 0, det g(1, 1) = e^{4φ_g}, and the
+diagonal length grows from √2 to 2.687 at φ_g = π/2
+(ratio 1.9000, above the proven bound 1.5236). Claim (v)
+PASS: the |00⟩→|11⟩ geodesic bends toward +v (max
+deviation 0 at φ_g = 0, 0.1151 at π/2, 0.1945 at π,
+Spearman 1.0000), never toward u, and stays shorter than
+the diagonal; the shot is seed-independent (spread ~1e-12)
+and satisfies the geodesic ODE to 9.9e-09. Claim (vi)
+PASS: the Ricci scalar is R = −(20φ_g/9)e^{−2Φ} — negative
+for φ_g > 0, −3.4907 at (0, 0) for φ_g = π/2, decaying to
+−0.1508 at (1, 1) — and an independent finite-difference
+Riemann tensor built from the metric alone agrees with it
+to 5.2e-06 relative.
+
 ## Honest limits
 
 1. Classical emulation throughout. Gravity is a model phase,
@@ -80,6 +101,10 @@ to 0.20 at φ_g = π.
    are stated model parameters, not measured constants.
 6. TISU / the private theory is excluded from this package.
 7. No headline claim is emitted (`headline_allowed` is False).
+8. The curvature metric is a Riemannian metric on a model
+   concept plane, not a spacetime metric; Φ here is a
+   gravitational potential, not an integrated-information
+   measure, and no claim is made about real gravity.
 
 ## Running it
 
@@ -88,7 +113,8 @@ python3 -m pytest -q        # the full suite
 python3 gravity.py           # claim (i)
 python3 love.py              # claim (ii)
 python3 projection_reality.py  # claim (iii)
-python3 unified.py           # all three claims
+python3 curvature.py         # claims (iv)-(vi)
+python3 unified.py           # all six claims
 ```
 
 ## Licence

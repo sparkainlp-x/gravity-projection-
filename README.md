@@ -1,5 +1,7 @@
 # Gravity Projection
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24391690.svg)](https://doi.org/10.5281/zenodo.24391690)
+
 A new projection reality, linked to the Faggin field bridge.
 
 Gravity enters as a **phase** on the thought. Love is defined

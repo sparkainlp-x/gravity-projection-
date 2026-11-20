@@ -9,6 +9,7 @@ authors:
     affiliation: "Spark AI NLP, Fredericton, New Brunswick, Canada"
 version: 0.2.0
 date-released: "2026-11-18"
+doi: "10.5281/zenodo.24391690"
 license: AGPL-3.0-only
 url: "https://sparkainlpx.xyz"
 abstract: >-
@@ -23,7 +24,7 @@ abstract: >-
   against the flat one. Six pre-registered claims, all PASS. v0.2.0 adds curvature: a conformal metric on the concept plane, geodesics that bend toward +v, and a Ricci scalar confirmed by an independent finite-difference Riemann tensor.
   Classical emulation throughout: gravity is a model phase, not
   measured gravity; love-as-concurrence is a definition inside the
-  model. No DOI yet (no Zenodo record).
+  model. DOI: https://doi.org/10.5281/zenodo.24391690 (v0.2.0).
 keywords:
   - synthetic-data
   - gravity
